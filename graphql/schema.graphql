@@ -1,0 +1,58 @@
+
+#import ./types/Category.graphql
+#import ./queries/CategoryQuery.graphql
+#import ./types/User.graphql
+#import ./queries/UserQuery.graphql
+
+# "A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`." // to store date
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+    scalar Upload @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload")
+
+# type Mutation {
+#   upload(file: Upload!): String
+#     @field(resolver: "App\\GraphQL\\Mutations\\Upload@__invoke")
+# }
+
+    # extend type Mutation {
+    #     uploadFile(file: Upload!): String
+    # }
+extend type Mutation {
+    uploadFile(file: Upload!): String @field(resolver: "App\\GraphQL\\Mutations\\FileUploader@uploadFile")
+    register(name: String!, email: String!, password: String!): AuthPayload @field(resolver: "App\\GraphQL\\Mutations\\AuthResolver@register")
+    login(email: String!, password: String!): AuthPayload @field(resolver: "App\\GraphQL\\Mutations\\AuthResolver@login")
+    logout: LogoutResponse @field(resolver: "App\\GraphQL\\Mutations\\AuthResolver@logout")
+}
+
+# type AuthPayload {
+#     access_token: String!
+#     token_type: String!
+#     expires_in: Int!
+# }
+
+# type Query {
+#     me: User @guard(with: ["api"]) @auth
+# }
+
+
+
+type AuthPayload {
+    access_token: String!
+    token_type: String!
+    expires_in: Int!
+    user: User!
+}
+
+type User {
+    id: ID!
+    name: String!
+    email: String!
+}
+
+type Query {
+    me: User @auth
+}
+
+type LogoutResponse {
+  status: Boolean!
+  message: String!
+}

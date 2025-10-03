@@ -1,0 +1,24 @@
+# "Indicates what fields are available at the top level of a query operation."
+extend type Query {
+    # "Find a single user by an identifying attribute."
+    user(
+      # "Search by primary key."
+      id: ID @eq @rules(apply: ["prohibits:email", "required_without:email"])
+
+      # "Search by email address."
+      email: String @eq @rules(apply: ["prohibits:id", "required_without:id", "email"])
+    ): User @find
+
+    # "List multiple users."
+    users(
+      # "Filters by name. Accepts SQL LIKE wildcards `%` and `_`."
+      name: String @where(operator: "like")
+    ): [User!]! @paginate(defaultCount: 10)
+}
+
+extend type Query {
+  category(id: ID!): Category @first
+  categories: [Category!]! @all @guard
+  createCategory(name: String!, status: Int): Category @create @guard
+  updateCategory(id: ID!, name: String, status: Int): Category @update
+}
